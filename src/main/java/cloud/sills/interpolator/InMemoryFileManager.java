@@ -5,8 +5,8 @@ import java.util.Hashtable;
 import java.util.Map;
 
 public class InMemoryFileManager extends ForwardingJavaFileManager<JavaFileManager> {
-    private Map<String, JavaClassAsBytes> compiledClasses;
 
+    private Map<String, JavaClassAsBytes> compiledClasses;
     private ClassLoader loader;
 
     public InMemoryFileManager(StandardJavaFileManager standardManager) {

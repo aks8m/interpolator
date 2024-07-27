@@ -12,11 +12,13 @@ import java.util.List;
 
 public class InterpolatorTest {
 
+    final static String QUALIFIED_CLASS_NAME = "cloud.sills.interpolator.TestClass";
+
     private String sourceCode =
                     """
-                        package cloud.sills;
+                        package cloud.sills.interpolator;
                         
-                        public class TestClass implements InMemoryClass {
+                        public class TestClass implements InMemoryClass{
                             
                             public void runCode() {
                                 System.out.println("code is running...");
@@ -31,18 +33,20 @@ public class InterpolatorTest {
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
         InMemoryFileManager manager = new InMemoryFileManager(compiler.getStandardFileManager(null, null, null));
 
-        List<JavaFileObject> sourceFiles = Collections.singletonList(new JavaSourceFromString("TestClass", sourceCode));
+        List<JavaFileObject> sourceFiles = Collections.singletonList(new JavaSourceFromString(QUALIFIED_CLASS_NAME, sourceCode));
 
         JavaCompiler.CompilationTask task = compiler.getTask(null, manager, diagnostics, null, null, sourceFiles);
 
         boolean result = task.call();
 
         if (!result) {
-            diagnostics.getDiagnostics().forEach(diagnostic -> System.out.println(String.valueOf(diagnostic) ));
+            diagnostics.getDiagnostics().forEach(System.out::println);
         }
 
         ClassLoader classLoader = manager.getClassLoader(null);
-        Class<?> clazz = classLoader.loadClass("TestClass");
+        classLoader.loadClass(InMemoryClass.class.getName());
+        Class<?> clazz = classLoader.loadClass(QUALIFIED_CLASS_NAME);
+
         InMemoryClass instanceOfClass = (InMemoryClass) clazz.newInstance();
 
         Assertions.assertInstanceOf(InMemoryClass.class, instanceOfClass);
